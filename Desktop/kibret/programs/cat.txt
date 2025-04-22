@@ -1,0 +1,4 @@
+decl part1 = "Code ";
+decl part2 = "Cats!";
+decl result = part1 + part2;
+print result;

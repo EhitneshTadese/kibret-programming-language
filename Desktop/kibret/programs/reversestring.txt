@@ -1,0 +1,4 @@
+input word = "Enter a word:";
+decl reversed = reverse word;
+print "Reversed word:";
+print reversed;

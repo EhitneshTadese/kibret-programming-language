@@ -110,8 +110,8 @@ def execute_lines(lines):
                     result = evaluate(func_call)
                     if result is not None:
                         print(result)
-
-        # Handle if-blocks
+                        
+           # Handle if-else blocks
         elif line.startswith("if "):
             match = re.match(r"if\s+(.?)\s\{", line)
             if match:
@@ -122,18 +122,25 @@ def execute_lines(lines):
                 while i < len(lines) and lines[i].strip() != "}":
                     block.append(lines[i])
                     i += 1
-                # Execute block only if condition is true
-                if evaluate(condition):
+                condition_result = evaluate(condition)
+                if_executed = False
+                if condition_result:
                     execute_lines(block)
+                    if_executed = True
 
-        # Handle else blocks (only executes if reached)
-        elif line.startswith("else"):
-            block = []
-            i += 1
-            while i < len(lines) and lines[i].strip() != "}":
-                block.append(lines[i])
-                i += 1
-            execute_lines(block)  # Execute else block
+                # Check if next line is an else block
+                if i + 1 < len(lines) and lines[i + 1].strip().startswith("else"):
+                    i += 2  # Skip the "else {" line
+                    else_block = []
+                    while i < len(lines) and lines[i].strip() != "}":
+                        else_block.append(lines[i])
+                        i += 1
+                    if not if_executed:
+                        execute_lines(else_block)
+                        
+
+
+         
 
         # Handle repeat loops
         elif line.startswith("repeat "):
@@ -160,8 +167,7 @@ def run_file(filename):
         execute_lines(lines)
 
 # Entry point when script is run directly
-if __name__== "__main__":
-   
+if __name__ == "__main__":
     import sys
     if len(sys.argv) != 2:
         print("Usage: python interpreter.py programs/file.txt")

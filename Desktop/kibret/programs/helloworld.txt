@@ -1,3 +1,1 @@
-decl greeting = "Hello World From Kibret Programming Language";
-
-print greeting;
+print " Hello World From Kibret Programming Lnaguage!";

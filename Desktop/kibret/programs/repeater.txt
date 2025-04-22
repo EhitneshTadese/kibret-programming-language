@@ -1,0 +1,5 @@
+input ch = "Enter a character:";
+input n = "How many times to repeat:";
+repeat n {
+  print ch;
+}

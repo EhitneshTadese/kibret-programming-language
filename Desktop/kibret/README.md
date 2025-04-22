@@ -15,7 +15,7 @@ This is a simple interpreter for a custom scripting language built in Python. It
 ## 📜 Example Syntax
 
 plaintext
-decl name = "Alice";
+decl name = "Melat";
 decl age = 25;
 print name;
 print to_upper(name);
@@ -25,7 +25,7 @@ funct greet(person) {
     print "Hello, " + person;
 }
 
-greet("Bob");
+greet("Hanna");
 
 if age > 18 {
     print "Adult";
