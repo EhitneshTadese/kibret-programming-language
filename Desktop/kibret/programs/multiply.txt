@@ -1,0 +1,5 @@
+input x = "Enter a number:";
+input y = "Enter another number:";
+decl answer = x * y;
+print "The result is:  ";
+print answer;
