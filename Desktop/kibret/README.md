@@ -1,6 +1,8 @@
-# Custom Interpreted Language
+# Custom Interpreted Language — Kibret
 
-This is a simple interpreter for a custom scripting language built in Python. It supports basic features like variables, functions, conditionals, loops, input/output, and built-in string operations.
+This is a simple programming language called **Kibret**, implemented both as an **interpreter in Python** and a **transpiler to C (using Bison/Flex)**. The language supports common features like variables, functions, conditionals, loops, input/output, and basic string operations.
+
+---
 
 ## 🧠 Features
 
@@ -8,13 +10,16 @@ This is a simple interpreter for a custom scripting language built in Python. It
 - Print output to console
 - Accept user input
 - Function definition and execution
-- Conditional (if / else) blocks
-- repeat loops
-- Basic built-in operations: length(), to_upper(), to_lower(), reverse
+- Conditional (`if` / `else`) blocks
+- `repeat` loops
+- Built-in functions: `length()`, `to_upper()`, `to_lower()`, `reverse`
+- Transpilation to C for performance and portability
+
+---
 
 ## 📜 Example Syntax
 
-plaintext
+```plaintext
 decl name = "Melat";
 decl age = 25;
 print name;
@@ -36,61 +41,119 @@ if age > 18 {
 repeat 3 {
     print "Looping!";
 }
+```
 
+---
 
-## 🚀 Running the Interpreter
+## 🚀 Interpreter
 
-Ensure you have Python 3.11 installed.
+Ensure you have Python 3.11+ installed.
 
-bash
-python interpreter.py programs/helloworld.txt
+### ▶️ Run the Interpreter
 
+```bash
+py interpreter.py programs/helloworld.txt (Windows)
+```
 
-Your script file should end with .txt and follow the syntax rules.
+Your script file should end with `.txt` and follow the Kibret syntax rules.
 
-## 📂 Project Structure
+### 📂 Project Structure
 
-
+```
 .
 ├── interpreter.py
 ├── programs/
 │   ├── helloworld.txt
-│   └── int.txt
+│   └── multiply.txt
 └── README.md
+```
+
+### ⚙ Built-in Functions
+
+| Custom Name    | Python Equivalent      | Example                      |
+|----------------|------------------------|------------------------------|
+| `length(x)`    | `len(x)`               | `length("hello") → 5`        |
+| `to_upper(x)`  | `str(x).upper()`       | `to_upper("hello") → HELLO`  |
+| `to_lower(x)`  | `str(x).lower()`       | `to_lower("HELLO") → hello`  |
+| `reverse "x"`  | `"x"[::-1]`            | `reverse "hello" → olleh`    |
+
+---
+
+## 🔁 Transpiler (Kibret to C)
+
+The Kibret Transpiler is written using **Bison** and **Flex**. It converts Kibret source code into equivalent **C code**, which can be compiled and run like any native C program.
+
+### 📄 Example Kibret Code
+
+```plaintext
+print "Hello, World from Kibret!";
+print 5 + 7;
+```
+
+### Manual Compiling or Build Step Using  MYSYS2 MINGW64
+
+flex kibret_lexer.l
+bison -d kibret_parser.y
+
+gcc -mconsole kibret_parser.tab.c lex.yy.c -o kibret_transpiler.exe
+
+### ⚙️ Transpiling
+
+```bash
+make
+./kibret_transpiler <  helloworld.txt > hello.c
+```
+
+Then compile the generated C code:
+
+```bash
+gcc hello.c -o hello
+./hello
+```
+
+### 📂 Transpiler Folder Structure
+
+```
+transpiler/
+├── kibret_parser.y         # Bison grammar
+├── kibret_lexer.l          # Flex lexer
+├── kibret_transpiler       # Output binary (after manual building or compiling)
+├── kibret_transpiler       # Output binary (after make)
 
 
-## ⚙ Built-in Functions
+    
+```
 
-| Custom Name    | Python Equivalent          | Example                      |
-|----------------|----------------------------|------------------------------|
-| length(x)    | len(x)                   | length("hello") → 5        |
-| to_upper(x)  | str(x).upper()           | to_upper("hello") → HELLO  |
-| to_lower(x)  | str(x).lower()           | to_lower("HELLO") → hello  |
-| reverse "x"  | "x"[::-1]                | reverse "hello" → olleh    |
+---
 
-## 📥 Input
+## 📥 Input Example
 
-plaintext
+```plaintext
 input user_name = "What is your name?";
 print user_name;
+```
 
+---
 
 ## 🧪 Function Calls
 
-plaintext
+```plaintext
 funct add(x, y) {
     print x + y;
 }
 
 add(5, 7);
-
-
-## 📌 Notes
-
-- All statements should end with a semicolon (;), except block declarations ({) and closing braces (}).
-- Whitespace is trimmed automatically.
-- Comments and empty lines are ignored.
+```
 
 ---
 
-Feel free to extend this interpreter with more features like file I/O, data types, or user-defined classes!
+## 📌 Notes
+
+- All statements must end with a semicolon (`;`)
+- Blocks use curly braces (`{}`) with no semicolons after them
+- Whitespace is trimmed automatically
+- Empty lines and comments are ignored
+
+---
+
+Feel free to extend this language with more features like file I/O, custom data types, or even class support.

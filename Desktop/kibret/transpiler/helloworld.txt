@@ -1,0 +1,2 @@
+print "Hello, World From Kibret Programming Language!";
+print 2 + 3;
