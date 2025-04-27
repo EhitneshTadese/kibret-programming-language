@@ -5,23 +5,24 @@
 %}
 
 %%
+
 [ \t\r\n]+        ; // Skip whitespace
 
+"input"           { return INPUT; }
 "print"           { return PRINT; }
+"decl"            { return DECL; }
 
-[0-9]+            { yylval.intval = atoi(yytext); return NUMBER; }
-[a-zA-Z_][a-zA-Z0-9_]* { yylval.strval = strdup(yytext); return IDENTIFIER; }
+[0-9]+            { yylval.str = strdup(yytext); return NUMBER; }
+[a-zA-Z_][a-zA-Z0-9_]* { yylval.str = strdup(yytext); return IDENTIFIER; }
 
 \"[^\"]*\"        {
-    yylval.strval = strdup(yytext + 1);
-    yylval.strval[strlen(yylval.strval) - 1] = '\0';
+    yylval.str = strdup(yytext + 1);
+    yylval.str[strlen(yylval.str) - 1] = '\0';
     return STRING;
 }
 
 "="               { return '='; }
 ";"               { return ';'; }
-"("               { return '('; }
-")"               { return ')'; }
 "+"               { return '+'; }
 "-"               { return '-'; }
 "/"               { return '/'; }

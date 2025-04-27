@@ -37,3 +37,13 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+
+
+
+
+
+
+// This is the main driver file for the Kibret transpiler. It takes in a Kibret source code file 
+// as input and outputs a C file. It opens the source file, processes it through the parser, 
+// and generates equivalent C code in the output file.

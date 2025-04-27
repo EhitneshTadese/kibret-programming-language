@@ -72,14 +72,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
 
-// Forward declarations
-int yylex(void);
 void yyerror(const char *s);
-void emit(const char *fmt, ...);
+int yylex(void);
 
-#line 83 "kibret_parser.tab.c"
+// Helper functions
+char* make_input_statement(const char* var, const char* prompt);
+char* make_decl_statement(const char* var, const char* expr);
+char* make_print_statement(const char* expr);
+char* make_arith_expression(const char* left, const char* op, const char* right);
+
+#line 86 "kibret_parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -113,15 +116,19 @@ enum yysymbol_kind_t
   YYSYMBOL_IDENTIFIER = 3,                 /* IDENTIFIER  */
   YYSYMBOL_STRING = 4,                     /* STRING  */
   YYSYMBOL_NUMBER = 5,                     /* NUMBER  */
-  YYSYMBOL_PRINT = 6,                      /* PRINT  */
-  YYSYMBOL_PRINTSTR = 7,                   /* PRINTSTR  */
-  YYSYMBOL_8_ = 8,                         /* ';'  */
+  YYSYMBOL_INPUT = 6,                      /* INPUT  */
+  YYSYMBOL_PRINT = 7,                      /* PRINT  */
+  YYSYMBOL_DECL = 8,                       /* DECL  */
   YYSYMBOL_9_ = 9,                         /* '+'  */
-  YYSYMBOL_YYACCEPT = 10,                  /* $accept  */
-  YYSYMBOL_program = 11,                   /* program  */
-  YYSYMBOL_statements = 12,                /* statements  */
-  YYSYMBOL_statement = 13,                 /* statement  */
-  YYSYMBOL_expression = 14                 /* expression  */
+  YYSYMBOL_10_ = 10,                       /* '-'  */
+  YYSYMBOL_11_ = 11,                       /* '*'  */
+  YYSYMBOL_12_ = 12,                       /* '/'  */
+  YYSYMBOL_13_ = 13,                       /* '='  */
+  YYSYMBOL_14_ = 14,                       /* ';'  */
+  YYSYMBOL_YYACCEPT = 15,                  /* $accept  */
+  YYSYMBOL_program = 16,                   /* program  */
+  YYSYMBOL_statement = 17,                 /* statement  */
+  YYSYMBOL_expression = 18                 /* expression  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -447,21 +454,21 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  9
+#define YYFINAL  12
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   18
+#define YYLAST   35
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  10
+#define YYNTOKENS  15
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  5
+#define YYNNTS  4
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  9
+#define YYNRULES  13
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  15
+#define YYNSTATES  32
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   262
+#define YYMAXUTOK   263
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -479,9 +486,9 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     9,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     8,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,    11,     9,     2,    10,     2,    12,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,    14,
+       2,    13,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -501,14 +508,15 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7
+       5,     6,     7,     8
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    28,    28,    32,    33,    37,    38,    42,    47,    50
+       0,    38,    38,    39,    43,    44,    45,    46,    47,    51,
+      52,    53,    54,    55
 };
 #endif
 
@@ -525,8 +533,8 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
 static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "IDENTIFIER", "STRING",
-  "NUMBER", "PRINT", "PRINTSTR", "';'", "'+'", "$accept", "program",
-  "statements", "statement", "expression", YY_NULLPTR
+  "NUMBER", "INPUT", "PRINT", "DECL", "'+'", "'-'", "'*'", "'/'", "'='",
+  "';'", "$accept", "program", "statement", "expression", YY_NULLPTR
 };
 
 static const char *
@@ -536,7 +544,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-4)
+#define YYPACT_NINF (-13)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -550,8 +558,10 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       2,    -3,     4,     2,    -4,    -4,     1,    -4,    -2,    -4,
-      -4,    -4,    -4,     0,     3
+       6,   -12,     2,    29,    12,     0,   -13,    -1,    -3,     4,
+      10,    -2,   -13,   -13,   -13,   -13,     7,    16,   -13,   -13,
+      -1,    -1,    -1,    -1,   -13,    20,    13,    14,    14,   -13,
+     -13,   -13
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -559,20 +569,22 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,     0,     2,     4,     8,     0,     7,     0,     1,
-       3,     6,     5,     0,     9
+       0,     0,     0,     0,     0,     0,     3,     0,     0,     0,
+       0,     0,     1,     2,    12,    13,     0,     0,     7,     6,
+       0,     0,     0,     0,     8,     0,     0,     9,    10,    11,
+       4,     5
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -4,    -4,    -4,     7,     5
+     -13,   -13,    30,     8
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     2,     3,     4,     8
+       0,     5,     6,    16
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -580,34 +592,42 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       5,     6,     7,     5,     9,     7,    12,    13,     1,    11,
-      10,     0,    13,     0,     0,     0,     0,     0,    14
+      12,     7,    14,     1,    15,     8,     2,     3,     4,     1,
+      17,    20,     2,     3,     4,    11,    21,    22,    18,    23,
+      25,    24,    21,    22,    19,    23,    23,    31,    26,    27,
+      28,    29,     9,    10,    30,    13
 };
 
 static const yytype_int8 yycheck[] =
 {
-       3,     4,     5,     3,     0,     5,     8,     9,     6,     8,
-       3,    -1,     9,    -1,    -1,    -1,    -1,    -1,    13
+       0,    13,     3,     3,     5,     3,     6,     7,     8,     3,
+      13,    13,     6,     7,     8,     3,     9,    10,    14,    12,
+       4,    14,     9,    10,    14,    12,    12,    14,    20,    21,
+      22,    23,     3,     4,    14,     5
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     6,    11,    12,    13,     3,     4,     5,    14,     0,
-      13,     8,     8,     9,    14
+       0,     3,     6,     7,     8,    16,    17,    13,     3,     3,
+       4,     3,     0,    17,     3,     5,    18,    13,    14,    14,
+      13,     9,    10,    12,    14,     4,    18,    18,    18,    18,
+      14,    14
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    10,    11,    12,    12,    13,    13,    14,    14,    14
+       0,    15,    16,    16,    17,    17,    17,    17,    17,    18,
+      18,    18,    18,    18
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     2,     1,     3,     3,     1,     1,     3
+       0,     2,     2,     1,     5,     5,     3,     3,     4,     3,
+       3,     3,     1,     1
 };
 
 
@@ -1070,50 +1090,80 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-  case 5: /* statement: PRINT expression ';'  */
-#line 37 "kibret_parser.y"
-                              { emit("printf(\"%%d\\n\", %s);\n", (yyvsp[-1].strval)); free((yyvsp[-1].strval)); }
-#line 1077 "kibret_parser.tab.c"
+  case 2: /* program: program statement  */
+#line 38 "kibret_parser.y"
+                        { printf("%s\n", (yyvsp[0].str)); free((yyvsp[0].str)); }
+#line 1097 "kibret_parser.tab.c"
+    break;
+
+  case 3: /* program: statement  */
+#line 39 "kibret_parser.y"
+                        { printf("%s\n", (yyvsp[0].str)); free((yyvsp[0].str)); }
+#line 1103 "kibret_parser.tab.c"
+    break;
+
+  case 4: /* statement: INPUT IDENTIFIER '=' STRING ';'  */
+#line 43 "kibret_parser.y"
+                                       { (yyval.str) = make_input_statement((yyvsp[-3].str), (yyvsp[-1].str)); free((yyvsp[-3].str)); free((yyvsp[-1].str)); }
+#line 1109 "kibret_parser.tab.c"
+    break;
+
+  case 5: /* statement: DECL IDENTIFIER '=' expression ';'  */
+#line 44 "kibret_parser.y"
+                                         { (yyval.str) = make_decl_statement((yyvsp[-3].str), (yyvsp[-1].str)); free((yyvsp[-3].str)); free((yyvsp[-1].str)); }
+#line 1115 "kibret_parser.tab.c"
     break;
 
   case 6: /* statement: PRINT STRING ';'  */
-#line 38 "kibret_parser.y"
-                              { emit("printf(\"%%s\\n\", \"%s\");\n", (yyvsp[-1].strval)); free((yyvsp[-1].strval)); }
-#line 1083 "kibret_parser.tab.c"
+#line 45 "kibret_parser.y"
+                                       { (yyval.str) = make_print_statement((yyvsp[-1].str)); free((yyvsp[-1].str)); }
+#line 1121 "kibret_parser.tab.c"
     break;
 
-  case 7: /* expression: NUMBER  */
-#line 42 "kibret_parser.y"
-             {
-          char buf[32];
-          sprintf(buf, "%d", (yyvsp[0].intval));
-          (yyval.strval) = strdup(buf);
-      }
-#line 1093 "kibret_parser.tab.c"
+  case 7: /* statement: PRINT IDENTIFIER ';'  */
+#line 46 "kibret_parser.y"
+                                        { (yyval.str) = make_print_statement((yyvsp[-1].str)); free((yyvsp[-1].str)); }
+#line 1127 "kibret_parser.tab.c"
     break;
 
-  case 8: /* expression: IDENTIFIER  */
+  case 8: /* statement: IDENTIFIER '=' expression ';'  */
 #line 47 "kibret_parser.y"
-                 {
-          (yyval.strval) = (yyvsp[0].strval);
-      }
-#line 1101 "kibret_parser.tab.c"
+                                        { (yyval.str) = make_decl_statement((yyvsp[-3].str), (yyvsp[-1].str)); free((yyvsp[-3].str)); free((yyvsp[-1].str)); }
+#line 1133 "kibret_parser.tab.c"
     break;
 
   case 9: /* expression: expression '+' expression  */
-#line 50 "kibret_parser.y"
-                                {
-          char *buf = malloc(strlen((yyvsp[-2].strval)) + strlen((yyvsp[0].strval)) + 4);
-          sprintf(buf, "(%s+%s)", (yyvsp[-2].strval), (yyvsp[0].strval));
-          (yyval.strval) = buf;
-          free((yyvsp[-2].strval));
-          free((yyvsp[0].strval));
-      }
-#line 1113 "kibret_parser.tab.c"
+#line 51 "kibret_parser.y"
+                                 { (yyval.str) = make_arith_expression((yyvsp[-2].str), "+", (yyvsp[0].str)); free((yyvsp[-2].str)); free((yyvsp[0].str)); }
+#line 1139 "kibret_parser.tab.c"
+    break;
+
+  case 10: /* expression: expression '-' expression  */
+#line 52 "kibret_parser.y"
+                                 { (yyval.str) = make_arith_expression((yyvsp[-2].str), "-", (yyvsp[0].str)); free((yyvsp[-2].str)); free((yyvsp[0].str)); }
+#line 1145 "kibret_parser.tab.c"
+    break;
+
+  case 11: /* expression: expression '/' expression  */
+#line 53 "kibret_parser.y"
+                                 { (yyval.str) = make_arith_expression((yyvsp[-2].str), "/", (yyvsp[0].str)); free((yyvsp[-2].str)); free((yyvsp[0].str)); }
+#line 1151 "kibret_parser.tab.c"
+    break;
+
+  case 12: /* expression: IDENTIFIER  */
+#line 54 "kibret_parser.y"
+                                 { (yyval.str) = strdup((yyvsp[0].str)); free((yyvsp[0].str)); }
+#line 1157 "kibret_parser.tab.c"
+    break;
+
+  case 13: /* expression: NUMBER  */
+#line 55 "kibret_parser.y"
+                                 { (yyval.str) = strdup((yyvsp[0].str)); free((yyvsp[0].str)); }
+#line 1163 "kibret_parser.tab.c"
     break;
 
 
-#line 1117 "kibret_parser.tab.c"
+#line 1167 "kibret_parser.tab.c"
 
       default: break;
     }
@@ -1306,24 +1356,41 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 59 "kibret_parser.y"
+#line 58 "kibret_parser.y"
 
-
-
-void emit(const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    vprintf(fmt, args);
-    va_end(args);
-}
 
 void yyerror(const char *s) {
     fprintf(stderr, "Parse error: %s\n", s);
 }
 
-int main() {
-    printf("#include <stdio.h>\n\nint main() {\n");
+char* make_input_statement(const char* var, const char* prompt) {
+    char* buffer = malloc(strlen(var) + strlen(prompt) + 100);
+    sprintf(buffer, "printf(\"%s\\n\"); scanf(\"%%d\", &%s);", prompt, var);
+    return buffer;
+}
+
+char* make_decl_statement(const char* var, const char* expr) {
+    char* buffer = malloc(strlen(var) + strlen(expr) + 20);
+    sprintf(buffer, "int %s = %s;", var, expr);
+    return buffer;
+}
+
+char* make_print_statement(const char* expr) {
+    char* buffer = malloc(strlen(expr) + 50);
+    sprintf(buffer, "printf(\"%%d\\n\", %s);", expr);
+    return buffer;
+}
+
+char* make_arith_expression(const char* left, const char* op, const char* right) {
+    char* buffer = malloc(strlen(left) + strlen(op) + strlen(right) + 10);
+    sprintf(buffer, "(%s %s %s)", left, op, right);
+    return buffer;
+}
+
+
+int main(void) {
     yyparse();
-    printf("return 0;\n}\n");
     return 0;
 }
+ 
+

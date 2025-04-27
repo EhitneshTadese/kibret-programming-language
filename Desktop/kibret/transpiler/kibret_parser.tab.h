@@ -57,8 +57,9 @@ extern int yydebug;
     IDENTIFIER = 258,              /* IDENTIFIER  */
     STRING = 259,                  /* STRING  */
     NUMBER = 260,                  /* NUMBER  */
-    PRINT = 261,                   /* PRINT  */
-    PRINTSTR = 262                 /* PRINTSTR  */
+    INPUT = 261,                   /* INPUT  */
+    PRINT = 262,                   /* PRINT  */
+    DECL = 263                     /* DECL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -67,10 +68,9 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 13 "kibret_parser.y"
+#line 17 "kibret_parser.y"
 
-    int intval;
-    char* strval;
+    char* str;
 
 #line 76 "kibret_parser.tab.h"
 
