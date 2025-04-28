@@ -44,12 +44,14 @@ statement
     | DECL IDENTIFIER '=' expression ';' { $$ = make_decl_statement($2, $4); free($2); free($4); }
     | PRINT STRING ';'                 { $$ = make_print_statement($2); free($2); }
     | PRINT IDENTIFIER ';'              { $$ = make_print_statement($2); free($2); }
+    | PRINT expression ';'               { $$ = make_print_statement($2); free($2); }
     | IDENTIFIER '=' expression ';'     { $$ = make_decl_statement($1, $3); free($1); free($3); }
     ;
 
 expression
     : expression '+' expression  { $$ = make_arith_expression($1, "+", $3); free($1); free($3); }
     | expression '-' expression  { $$ = make_arith_expression($1, "-", $3); free($1); free($3); }
+    | expression '*' expression  { $$ = make_arith_expression($1, "*", $3); free($1); free($3); }
     | expression '/' expression  { $$ = make_arith_expression($1, "/", $3); free($1); free($3); }
     | IDENTIFIER                 { $$ = strdup($1); free($1); }
     | NUMBER                     { $$ = strdup($1); free($1); }
@@ -74,8 +76,17 @@ char* make_decl_statement(const char* var, const char* expr) {
 }
 
 char* make_print_statement(const char* expr) {
-    char* buffer = malloc(strlen(expr) + 50);
-    sprintf(buffer, "printf(\"%%d\\n\", %s);", expr);
+    char* buffer = malloc(strlen(expr) + 100);
+
+    // If expr contains non-digit (probably an identifier or string), use %s
+    if (strspn(expr, "0123456789") == strlen(expr)) {
+        // All digits (number)
+        sprintf(buffer, "printf(\"%%d\\n\", %s);", expr);
+    } else {
+        // Otherwise string/variable
+        sprintf(buffer, "printf(\"%%s\\n\", %s);", expr);
+    }
+
     return buffer;
 }
 
@@ -84,6 +95,7 @@ char* make_arith_expression(const char* left, const char* op, const char* right)
     sprintf(buffer, "(%s %s %s)", left, op, right);
     return buffer;
 }
+
 
 
 int main(void) {

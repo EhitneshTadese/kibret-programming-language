@@ -25,7 +25,9 @@
 ";"               { return ';'; }
 "+"               { return '+'; }
 "-"               { return '-'; }
+"*"               { return '*'; } 
 "/"               { return '/'; }
+
 
 .                 { return yytext[0]; }
 %%

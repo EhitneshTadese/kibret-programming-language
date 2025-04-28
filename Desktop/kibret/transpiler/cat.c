@@ -1,5 +1,2 @@
-#include <stdio.h>
-
-int main() {
-return 0;
-}
+printf("ehit: \n"); scanf("%d", &user_input);
+printf("%s\n", user_input);
