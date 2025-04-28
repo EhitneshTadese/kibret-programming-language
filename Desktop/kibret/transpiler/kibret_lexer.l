@@ -11,6 +11,9 @@
 "input"           { return INPUT; }
 "print"           { return PRINT; }
 "decl"            { return DECL; }
+"repeat"          { return REPEAT; }
+"{"               { return '{'; }
+"}"               { return '}'; }
 
 [0-9]+            { yylval.str = strdup(yytext); return NUMBER; }
 [a-zA-Z_][a-zA-Z0-9_]* { yylval.str = strdup(yytext); return IDENTIFIER; }

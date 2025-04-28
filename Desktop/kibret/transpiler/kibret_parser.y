@@ -26,6 +26,7 @@ char* make_arith_expression(const char* left, const char* op, const char* right)
 %token INPUT
 %token PRINT
 %token DECL
+%token REPEAT
 
 %type <str> statement expression program
 
@@ -46,6 +47,13 @@ statement
     | PRINT IDENTIFIER ';'              { $$ = make_print_statement($2); free($2); }
     | PRINT expression ';'               { $$ = make_print_statement($2); free($2); }
     | IDENTIFIER '=' expression ';'     { $$ = make_decl_statement($1, $3); free($1); free($3); }
+    | REPEAT IDENTIFIER '{' program '}' { 
+    char* buffer = malloc(strlen($2) + strlen($4) + 100);
+    sprintf(buffer, "for (int i = 0; i < %s; ++i) {\n%s\n}", $2, $4);
+    $$ = buffer;
+    free($2);
+    free($4);
+}
     ;
 
 expression

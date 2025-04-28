@@ -59,7 +59,8 @@ extern int yydebug;
     NUMBER = 260,                  /* NUMBER  */
     INPUT = 261,                   /* INPUT  */
     PRINT = 262,                   /* PRINT  */
-    DECL = 263                     /* DECL  */
+    DECL = 263,                    /* DECL  */
+    REPEAT = 264                   /* REPEAT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -72,7 +73,7 @@ union YYSTYPE
 
     char* str;
 
-#line 76 "kibret_parser.tab.h"
+#line 77 "kibret_parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
